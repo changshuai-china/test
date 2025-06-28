@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">创建新工单</h2>
+<form method="POST" action="{{ url_for('create_order') }}">
+    {{ form.hidden_tag() }}
+    
+    <div class="alert alert-info">
+        业务员：{{ current_user.realname }} ({{ current_user.department.name }})
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ form.order_number.label(class="form-label") }}
+            {{ form.order_number(class="form-control") }}
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            {{ form.order_date.label(class="form-label") }}
+            {{ form.order_date(class="form-control") }}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            {{ form.quantity.label(class="form-label") }}
+            {{ form.quantity(class="form-control") }}
+        </div>
+        
+        <div class="col-md-6 mb-3">
+            {{ form.delivery_date.label(class="form-label") }}
+            {{ form.delivery_date(class="form-control") }}
+        </div>
+    </div>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>下一环节信息</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    {{ form.next_stage_name.label(class="form-label") }}
+                    {{ form.next_stage_name(class="form-control", placeholder="如：设计评审、生产准备等") }}
+                </div>
+                
+                <div class="col-md-6 mb-3">
+                    {{ form.next_assignee_id.label(class="form-label") }}
+                    {{ form.next_assignee_id(class="form-select") }}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+</form>
+{% endblock %}

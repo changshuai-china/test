@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header">
+        <h5>工单信息</h5>
+    </div>
+    <div class="card-body">
+        <p><strong>派工单号:</strong> {{ order.order_number }}</p>
+        <p><strong>下单日期:</strong> {{ order.order_date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>数量:</strong> {{ order.quantity }}</p>
+        <p><strong>交货期:</strong> {{ order.delivery_date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>业务员:</strong> {{ order.salesperson.realname }}</p>
+        
+        <!-- 改进总历时显示 -->
+        {% set total_hours = order.total_duration // 3600 %}
+        {% set total_minutes = (order.total_duration % 3600) // 60 %}
+        <p><strong>总历时:</strong> 
+            {% if total_hours > 0 %}
+                {{ total_hours }} 小时 
+            {% endif %}
+            {{ total_minutes }} 分钟
+        </p>
+        
+        <p><strong>当前环节:</strong> {{ order.current_stage }}</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>流转记录</h5>
+    </div>
+    <div class="card-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>环节名称</th>
+                    <th>负责人</th>
+                    <th>开始时间</th>
+                    <th>结束时间</th>
+                    <th>历时</th>
+                    <th>附件</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stage in order.stages %}
+                <tr>
+                    <td>{{ stage.stage_name }}</td>
+                    <td>{{ stage.assignee.realname }}</td>
+                    <td>{{ stage.start_time.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>
+                        {% if stage.end_time %}
+                            {{ stage.end_time.strftime('%Y-%m-%d %H:%M') }}
+                        {% else %}
+                            进行中
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if stage.duration %}
+                            {% set hours = stage.duration // 3600 %}
+                            {% set minutes = (stage.duration % 3600) // 60 %}
+                            {% if hours > 0 %}
+                                {{ hours }}小时
+                            {% endif %}
+                            {{ minutes }}分钟
+                        {% elif not stage.end_time %}
+                            计算中...
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% for attachment in stage.attachments %}
+                            <a href="{{ url_for('download_file', filename=attachment.filename) }}">
+                                {{ attachment.filename|truncate(20) }}
+                            </a><br>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

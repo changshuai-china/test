@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">工单列表</h2>
+<a href="{{ url_for('create_order') }}" class="btn btn-success mb-3">创建新工单</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>派工单号</th>
+            <th>下单日期</th>
+            <th>数量</th>
+            <th>交货期</th>
+            <th>业务员</th>
+            <th>当前环节</th>
+            <th>操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>{{ order.delivery_date.strftime('%Y-%m-%d') }}</td>
+            <td>{{ order.salesperson }}</td>
+            <td>{{ order.current_stage }}</td>
+            <td>
+                <a href="{{ url_for('view_order', order_id=order.id) }}" class="btn btn-sm btn-info">查看</a>
+                <a href="{{ url_for('assign_order', order_id=order.id) }}" class="btn btn-sm btn-warning">指派</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

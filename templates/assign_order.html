@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">指派工单: {{ order.order_number }}</h2>
+<form method="POST" enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+    
+    <div class="mb-3">
+        {{ form.stage_name.label(class="form-label") }}
+        {{ form.stage_name(class="form-control") }}
+    </div>
+    
+    <div class="mb-3">
+        {{ form.assignee_id.label(class="form-label") }}  <!-- 修改这里 -->
+        {{ form.assignee_id(class="form-select") }}       <!-- 修改这里 -->
+    </div>
+    
+    <div class="mb-3">
+        {{ form.attachment.label(class="form-label") }}
+        {{ form.attachment(class="form-control") }}
+        <div class="form-text">允许的文件类型: PDF, PNG, JPG, DOC, DOCX</div>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">{{ form.submit.label.text }}</button>
+    <a href="{{ url_for('view_order', order_id=order.id) }}" class="btn btn-secondary">取消</a>
+</form>
+{% endblock %}
