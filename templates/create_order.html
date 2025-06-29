@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-plus-circle me-2"></i>创建新工单</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('create_order') }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="alert alert-info d-flex align-items-center">
+                <i class="bi bi-info-circle me-2"></i>
+                <div>
+                    业务员：{{ current_user.realname }} ({{ current_user.department.name }})
+                </div>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.order_number(class="form-control", placeholder="派工单号") }}
+                        {{ form.order_number.label(class="form-label") }}
+                        {% for error in form.order_number.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.order_date(class="form-control", placeholder="下单日期") }}
+                        {{ form.order_date.label(class="form-label") }}
+                        {% for error in form.order_date.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">格式: yyyy/mm/dd 或 yyyymmdd (例如: 2025/06/29)</div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.quantity(class="form-control", placeholder="数量") }}
+                        {{ form.quantity.label(class="form-label") }}
+                        {% for error in form.quantity.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.delivery_date(class="form-control", placeholder="交货期") }}
+                        {{ form.delivery_date.label(class="form-label") }}
+                        {% for error in form.delivery_date.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                        <div class="form-text">格式: yyyy/mm/dd 或 yyyymmdd (例如: 2025/07/15)</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="bi bi-arrow-right-circle me-2"></i>下一环节信息</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.next_stage_name(class="form-select") }}
+                                {{ form.next_stage_name.label(class="form-label") }}
+                                {% for error in form.next_stage_name.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                {{ form.next_assignee_id(class="form-select") }}
+                                {{ form.next_assignee_id.label(class="form-label") }}
+                                {% for error in form.next_assignee_id.errors %}
+                                    <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-2"></i>{{ form.submit.label.text }}
+                </button>
+                <a href="{{ url_for('view_orders') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-2"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

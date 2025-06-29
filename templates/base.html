@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工单流转系统</title>
+    <!-- 本地引入Bootstrap CSS -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #3c8dbc;
+            --secondary-color: #f8f9fa;
+            --accent-color: #00c0ef;
+        }
+        
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-bottom: 20px;
+        }
+        
+        .navbar {
+            background-color: var(--primary-color);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border: none;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .card-header {
+            background-color: var(--secondary-color);
+            border-bottom: 1px solid #eaeaea;
+            font-weight: 600;
+            padding: 15px 20px;
+            color: #333;
+        }
+        
+        .table-hover > tbody > tr:hover {
+            background-color: rgba(60, 141, 188, 0.05);
+        }
+        
+        .breadcrumb {
+            background-color: transparent;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        
+        .btn-action {
+            padding: 5px 10px;
+            font-size: 14px;
+            margin-right: 5px;
+            min-width: 60px;
+            border-radius: 4px;
+        }
+        
+        .page-header {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .alert {
+            border-radius: 6px;
+        }
+        
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+        
+        .order-card {
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .order-info {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .order-info-item {
+            flex: 0 0 50%;
+            padding: 8px 0;
+        }
+        
+        .order-info-label {
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .order-info-value {
+            font-size: 15px;
+            color: #333;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            margin: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #eaeaea;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .timeline-content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+        
+        .stat-title {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .system-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        /* 新增面包屑导航样式 */
+        .breadcrumb-container {
+            padding: 15px 0;
+            background-color: #f8f9fa;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        
+        .breadcrumb-item + .breadcrumb-item::before {
+            content: ">";
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{{ url_for('view_orders') }}">
+                <span class="system-title">工单流转系统</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('view_orders') }}">工单列表</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('create_order') }}">创建工单</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="adminDropdown" role="button" data-bs-toggle="dropdown">后台管理</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{{ url_for('admin.manage_users') }}">用户管理</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin.manage_departments') }}">部门管理</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if current_user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">{{ current_user.realname }}</a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="#">个人资料</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}">退出</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">登录</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container py-3">
+        <!-- 仪表盘统计（仅首页显示） -->
+        {% if request.path == url_for('view_orders') and stats is defined %}
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.ongoing }}</div>
+                <div class="stat-title">进行中工单</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.completed }}</div>
+                <div class="stat-title">已完成工单</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.users }}</div>
+                <div class="stat-title">参与人员</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ stats.on_time_rate }}%</div>
+                <div class="stat-title">准时完成率</div>
+            </div>
+        </div>
+        {% endif %}
+        
+        <!-- 内容区域 -->
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- 本地引入Bootstrap JS -->
+    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
+    <script>
+        // 初始化Bootstrap组件
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化弹窗
+            const alerts = document.querySelectorAll('.alert');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    const bsAlert = new bootstrap.Alert(alert);
+                    bsAlert.close();
+                }, 5000);
+            });
+            
+            // 初始化下拉菜单
+            const dropdowns = document.querySelectorAll('.dropdown-toggle');
+            dropdowns.forEach(dropdown => {
+                new bootstrap.Dropdown(dropdown);
+            });
+        });
+        
+        // 显示确认对话框
+        function confirmAction(message) {
+            return confirm(message);
+        }
+    </script>
+</body>
+</html>

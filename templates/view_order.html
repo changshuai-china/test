@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5>工单信息</h5>
+        {% if current_user.id == order.current_assignee_id %}
+        <a href="{{ url_for('process_order', order_id=order.id) }}" class="btn btn-primary">
+            处理并指派
+        </a>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="small text-muted">派工单号</label>
+                    <p class="fs-5">{{ order.order_number }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="small text-muted">下单日期</label>
+                    <p class="fs-5">{{ order.order_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="small text-muted">数量</label>
+                    <p class="fs-5">{{ order.quantity }}</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="small text-muted">交货期</label>
+                    <p class="fs-5">{{ order.delivery_date.strftime('%Y-%m-%d') }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="small text-muted">业务员</label>
+                    <p class="fs-5">{{ order.salesperson.realname }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="small text-muted">当前环节</label>
+                    <p class="fs-5">{{ order.current_stage }}</p>
+                </div>
+                <div class="mb-3">
+                    <label class="small text-muted">当前负责人</label>
+                    <p class="fs-5">{{ order.current_assignee.realname }}</p>
+                </div>
+            </div>
+        </div>
+        
+        {% set total_hours = order.total_duration // 3600 %}
+        {% set total_minutes = (order.total_duration % 3600) // 60 %}
+        <div class="alert alert-light">
+            <label class="small text-muted">总历时</label>
+            <p class="mb-0">
+                {% if total_hours > 0 %}
+                    {{ total_hours }} 小时 
+                {% endif %}
+                {{ total_minutes }} 分钟
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5>流转记录</h5>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>环节</th>
+                        <th>负责人</th>
+                        <th>开始时间</th>
+                        <th>结束时间</th>
+                        <th>历时</th>
+                        <th>备注</th>
+                        <th>附件</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stage in order.stages|sort(attribute='start_time') %}
+                    <tr>
+                        <td>{{ stage.stage_name }}</td>
+                        <td>{{ stage.assignee.realname }}</td>
+                        <td>{{ stage.start_time.strftime('%m-%d %H:%M') }}</td>
+                        <td>
+                            {% if stage.end_time %}
+                                {{ stage.end_time.strftime('%m-%d %H:%M') }}
+                            {% else %}
+                                <span class="badge bg-info status-badge">进行中</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if stage.duration %}
+                                {% set hours = stage.duration // 3600 %}
+                                {% set minutes = (stage.duration % 3600) // 60 %}
+                                {% if hours > 0 %}
+                                    {{ hours }}h
+                                {% endif %}
+                                {{ minutes }}m
+                            {% elif not stage.end_time %}
+                                <span class="badge bg-secondary status-badge">-</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ stage.comments or ''|truncate(20) }}</td>
+                        <td>
+                            {% for attachment in stage.attachments %}
+                                <a href="{{ url_for('download_file', filename=attachment.filename) }}" class="d-block">
+                                    <i class="bi bi-paperclip"></i> {{ attachment.filename|truncate(15) }}
+                                </a>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center py-4 text-muted">暂无流转记录</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

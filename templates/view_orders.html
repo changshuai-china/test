@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">工单列表</h2>
+</div>
+
+<div class="card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>派工单号</th>
+                        <th>下单日期</th>
+                        <th>数量</th>
+                        <th>交货期</th>
+                        <th>业务员</th>
+                        <th>当前环节</th>
+                        <th>当前负责人</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.order_number }}</td>
+                        <td>{{ order.order_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.quantity }}</td>
+                        <td>{{ order.delivery_date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ order.salesperson.realname }}</td>
+                        <td>
+                            <span class="badge bg-light text-dark status-badge">{{ order.current_stage }}</span>
+                        </td>
+                        <td>{{ order.current_assignee.realname if order.current_assignee else '' }}</td>
+                        <td>
+                            <a href="{{ url_for('view_order', order_id=order.id) }}" 
+                               class="btn btn-sm btn-info btn-action">查看</a>
+                            {% if current_user.is_admin() or current_user.id == order.current_assignee_id %}
+                            <a href="{{ url_for('assign_order', order_id=order.id) }}" 
+                               class="btn btn-sm btn-warning btn-action">指派</a>
+                            {% endif %}
+                            {% if current_user.id == order.current_assignee_id %}
+                            <a href="{{ url_for('process_order', order_id=order.id) }}" 
+                               class="btn btn-sm btn-success btn-action">处理</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">暂无工单</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

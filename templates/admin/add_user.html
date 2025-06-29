@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-person-plus me-2"></i>添加新用户</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('admin.add_user') }}">
+            {{ form.hidden_tag() }}
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.username(class="form-control", placeholder="用户名") }}
+                        {{ form.username.label(class="form-label") }}
+                        {% for error in form.username.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.realname(class="form-control", placeholder="真实姓名") }}
+                        {{ form.realname.label(class="form-label") }}
+                        {% for error in form.realname.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.password(class="form-control", placeholder="密码") }}
+                        {{ form.password.label(class="form-label") }}
+                        {% for error in form.password.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.confirm_password(class="form-control", placeholder="确认密码") }}
+                        {{ form.confirm_password.label(class="form-label") }}
+                        {% for error in form.confirm_password.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.role(class="form-select") }}
+                        {{ form.role.label(class="form-label") }}
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        {{ form.department_id(class="form-select") }}
+                        {{ form.department_id.label(class="form-label") }}
+                    </div>
+                </div>
+                
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        {{ form.can_create_order(class="form-check-input") }}
+                        {{ form.can_create_order.label(class="form-check-label") }}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-circle me-2"></i>添加用户
+                </button>
+                <a href="{{ url_for('admin.manage_users') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-2"></i>取消
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
